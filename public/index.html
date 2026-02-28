@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asensio ADMS Remote Server</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet para el Mapa -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        .filter-panel {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .select-input,
+        .date-input {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .select-input:focus,
+        .date-input:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+        }
+
+        .asensio-logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1rem;
+        }
+
+        .asensio-logo-container h2 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .asensio-logo-container h2 span {
+            color: var(--brand-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="asensio-logo-container">
+            <!-- Si tienes el logo, reemplázalo aquí. Por defecto muestro el texto estilizado simulando la marca -->
+            <h2>ASENSIO <span>S.A.</span></h2>
+        </div>
+        <ul class="nav">
+            <li class="active" data-target="dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</li>
+            <li data-target="devices"><i class="fa-solid fa-server"></i> Dispositivos</li>
+            <li data-target="attendances"><i class="fa-solid fa-list-check"></i> Registraciones</li>
+            <li class="nav-divider"></li>
+            <li data-target="diagnostics"><i class="fa-solid fa-stethoscope"></i> Diagnóstico</li>
+            <li data-target="map"><i class="fa-solid fa-map-location-dot"></i> Mapa Global</li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h1>Asensio ADMS Remote Server</h1>
+            <div class="status-indicator online">
+                <span class="dot"></span> Servidor en línea
+            </div>
+        </header>
+
+        <!-- DASHBOARD VIEW -->
+        <section id="dashboard" class="view active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="icon-container bg-blue"><i class="fa-solid fa-microchip"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Dispositivos</h3>
+                        <p id="total-devices">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-container bg-green"><i class="fa-solid fa-check-circle"></i></div>
+                    <div class="stat-info">
+                        <h3>Equipos Autorizados</h3>
+                        <p id="authorized-devices">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-container bg-orange"><i class="fa-solid fa-exchange-alt"></i></div>
+                    <div class="stat-info">
+                        <h3>Transacciones Realizadas</h3>
+                        <p id="total-attendances">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon-container" style="background-color: #6366f1;"><i class="fa-solid fa-database"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Base de Datos (Límite 500MB)</h3>
+                        <p id="db-usage" style="font-size: 1.25rem;">0.00 / 512 MB</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DEVICES VIEW -->
+        <section id="devices" class="view">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Gestión de Equipos</h2>
+                    <button class="btn btn-primary" onclick="loadDevices()"><i class="fa-solid fa-rotate-right"></i>
+                        Refrescar</button>
+                </div>
+                <div class="table-responsive">
+                    <table id="devices-table">
+                        <thead>
+                            <tr>
+                                <th>Nro. Serie</th>
+                                <th>Alias</th>
+                                <th>Última Actividad</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ATTENDANCES VIEW (Registraciones) -->
+        <section id="attendances" class="view">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Historial de Registraciones</h2>
+                    <button class="btn btn-primary" onclick="loadAttendancesFiltered()"><i
+                            class="fa-solid fa-magnifying-glass"></i> Buscar</button>
+                </div>
+
+                <div class="filter-panel">
+                    <div class="filter-group">
+                        <label for="filter-date-from">Desde (Fecha):</label>
+                        <input type="date" id="filter-date-from" class="date-input">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-date-to">Hasta (Fecha):</label>
+                        <input type="date" id="filter-date-to" class="date-input">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-device">Equipos (Nº de Serie):</label>
+                        <input type="text" id="filter-device" class="input-text" placeholder="Ej: TESTB123, 98765"
+                            style="width: 200px;">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-emp-id">ID Empleado:</label>
+                        <input type="text" id="filter-emp-id" class="input-text" placeholder="Ej: 1001"
+                            style="width: 150px;">
+                    </div>
+                    <div class="filter-group">
+                        <button class="btn btn-primary" onclick="loadAttendancesFiltered()" style="height: 38px;"><i
+                                class="fa-solid fa-filter"></i> Aplicar</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="attendances-table">
+                        <thead>
+                            <tr>
+                                <th>ID Empleado</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Código</th>
+                                <th>Equipo / Sucursal</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- DIAGNOSTICS VIEW -->
+        <section id="diagnostics" class="view">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Diagnóstico en Vivo de Datos</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="filter-sn" placeholder="Filtrar por N° Serie (Ej. TESTB...)"
+                            class="input-text">
+                        <button class="btn btn-primary" onclick="loadDiagnostics()"><i class="fa-solid fa-filter"></i>
+                            Filtrar</button>
+                    </div>
+                </div>
+                <div class="diagnostic-console" id="diagnostic-log">
+                    <div class="log-entry">Selecciona y aplica un filtro.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MAP VIEW -->
+        <section id="map" class="view">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Ubicación de Equipos</h2>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary);">Muestra la geolocalización de los
+                        equipos autorizados.</p>
+                </div>
+                <div id="leaflet-map" style="height: 500px; width: 100%; border-radius: 0 0 12px 12px; z-index: 1;">
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

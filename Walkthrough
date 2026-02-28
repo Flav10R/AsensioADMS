@@ -1,0 +1,42 @@
+# Backend ZKTeco PUSH SDK Completado
+
+Se ha finalizado el desarrollo del backend en Node.js (Express) para recibir conexiones de los relojes ZKTeco y administrar los equipos conectándose a Supabase.
+
+## ¿Qué se implementó?
+
+1.  **Servidor Express (`server.js`)**: Configurado para escuchar en el puerto 8080 (o el definido en `.env`), con soporte CORS y un parser de texto personalizado para las peticiones de los relojes.
+2.  **Endpoints para ZKTeco (`/src/controllers/iclock.js`)**:
+    *   `/iclock/cdata` (GET/POST): Permite el handshake inicial del dispositivo y la recepción de datos de asistencias (Punch Logs).
+    *   `/iclock/getrequest`: Permite que los dispositivos consulten por comandos pendientes en el servidor.
+    *   `/iclock/devicecmd`: Recibe el estado de ejecución de los comandos remotos.
+3.  **API del Panel de Administración (`/src/controllers/admin.js`)**:
+    *   `/api/admin/devices`: Listado de equipos.
+    *   `/api/admin/devices/:sn/authorize`: Activar/Desactivar equipos.
+    *   `/api/admin/attendances`: Visualizar las fichadas de los empleados.
+    *   `/api/admin/devices/:sn/commands`: Enviar comandos al reloj (ej. abrir puerta, reiniciar).
+4.  **Conexión a Supabase (`/src/config/supabase.js`)**: Cliente configurado con las variables de entorno.
+5.  **Utilidades de Parsing (`/src/utils/parser.js`)**: Para convertir las cadenas de texto del reloj separadas por tabulaciones a objetos JSON.
+
+## Pasos para el despliegue / uso
+
+1.  **Configurar la Base de Datos en Supabase:**
+    *   He incluido un archivo llamado `supabase_schema.sql` en la raíz del proyecto.
+    *   Copia y pega el contenido de ese archivo en el editor SQL de tu panel de **Supabase** y ejecútalo para crear las tablas (`devices`, `attendances`, `device_commands`).
+
+2.  **Configurar Variables de Entorno (.env):**
+    *   Abre el archivo `.env` en tu proyecto.
+    *   Reemplaza `YOUR_SUPABASE_PROJECT_URL` por la URL de tu proyecto.
+    *   Reemplaza `YOUR_SUPABASE_SERVICE_ROLE_KEY` por tu `service_role` key (esto es vital para burlar el RLS y que el backend pueda escribir).
+
+3.  **Ejecutar el Servidor:**
+    *   Abre una terminal en la carpeta del proyecto.
+    *   Ejecuta: `node server.js` o `npm start` (puedes instalar nodemon para desarrollo).
+    *   El servidor se levantará informando que está escuchando en el puerto 8080.
+
+## Validación Final
+
+*   Se comprobó que el servidor Express compila correctamente y no tiene errores de sintaxis en sus rutas.
+*   Cualquier reloj ZKTeco configurado con la IP de tu servidor y puerto 8080 apuntando a `/iclock` debería comenzar a reportar.
+
+> [!TIP]
+> Recuerda autorizar los equipos en Supabase (campo `is_authorized = true` en la tabla `devices`) o a través de la API `/api/admin/devices/:sn/authorize` para empezar a llevar un control estricto, o modifica la lógica en `/iclock/cdata` si quieres aceptar datos de cualquier equipo automáticamente.

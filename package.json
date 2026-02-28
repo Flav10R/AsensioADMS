@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "@supabase/supabase-js": "^2.98.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "pdf-parse": "^2.4.5",
+    "pdf2json": "^4.0.2"
+  },
+  "name": "adms_proyect",
+  "version": "1.0.0",
+  "main": "parse-pdf.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
