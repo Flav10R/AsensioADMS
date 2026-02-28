@@ -78,7 +78,15 @@ async function loadDashboard() {
             authorizedFetch(`${API_URL}/attendances?limit=1`) // Request minimal data
         ]);
 
+        if (!devicesRes.ok || !attendancesRes.ok) {
+            const err = await devicesRes.json();
+            console.error("Fetch Error:", err);
+            return;
+        }
+
         const devices = await devicesRes.json();
+        if (!Array.isArray(devices)) throw new Error("Devices is not an array");
+
         const authDevices = devices.filter(d => d.is_authorized).length;
 
         const attendancesData = await attendancesRes.json();
@@ -104,7 +112,10 @@ async function loadDevices() {
 
     try {
         const response = await authorizedFetch(`${API_URL}/devices`);
+        if (!response.ok) throw new Error("Error en la respuesta del servidor");
+
         const devices = await response.json();
+        if (!Array.isArray(devices)) throw new Error("Los datos de dispositivos no son un array");
 
         tbody.innerHTML = '';
         if (devices.length === 0) {
