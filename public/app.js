@@ -33,13 +33,14 @@ function handleSession(session) {
     }
 }
 
-// Interceptor para Fetch que añade el Token
+// Interceptor para Fetch que añade el Token y la apikey necesaria para Edge Functions
 async function authorizedFetch(url, options = {}) {
     if (!currentSession) return null;
 
     const headers = {
         ...options.headers,
         'Authorization': `Bearer ${currentSession.access_token}`,
+        'apikey': SB_ANON_KEY,
         'Content-Type': 'application/json'
     };
 
