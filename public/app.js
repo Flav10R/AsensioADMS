@@ -1,9 +1,56 @@
-const API_URL = '/api/admin';
-let leafletMap = null; // Global map reference
+// CONFIGURACIÓN DE SUPABASE
+// Reemplaza estos valores con los de tu Dashboard de Supabase (Settings -> API)
+const SB_URL = 'https://vgkazdekgkowualsooyr.supabase.co';
+const SB_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZna2F6ZGVrZ2tvd3VhbHNvb3lyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxNjAyMTEsImV4cCI6MjA4NzczNjIxMX0.qP0vxBQH-syLYoft5HmX5R2R17XJQP19lLIIV6wNOOY'; // <--- PEGA TU ANON KEY AQUÍ
+
+const supabaseClient = supabase.createClient(SB_URL, SB_ANON_KEY);
+
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? '/api/admin'
+    : `${SB_URL}/functions/v1/admin-api`;
+
+let leafletMap = null;
+let currentSession = null;
+
+// Auth Check & UI Logic
+async function checkAuth() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    handleSession(session);
+
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
+        handleSession(session);
+    });
+}
+
+function handleSession(session) {
+    currentSession = session;
+    const overlay = document.getElementById('login-overlay');
+    if (session) {
+        overlay.classList.add('hidden');
+        loadDashboard();
+    } else {
+        overlay.classList.remove('hidden');
+    }
+}
+
+// Interceptor para Fetch que añade el Token
+async function authorizedFetch(url, options = {}) {
+    if (!currentSession) return null;
+
+    const headers = {
+        ...options.headers,
+        'Authorization': `Bearer ${currentSession.access_token}`,
+        'Content-Type': 'application/json'
+    };
+
+    return fetch(url, { ...options, headers });
+}
 
 // Navigation Logic
 document.querySelectorAll('.nav li').forEach(item => {
     item.addEventListener('click', (e) => {
+        if (!currentSession) return;
+
         // Toggle Active Class
         document.querySelectorAll('.nav li').forEach(li => li.classList.remove('active'));
         item.classList.add('active');
@@ -18,7 +65,7 @@ document.querySelectorAll('.nav li').forEach(item => {
         if (target === 'devices') loadDevices();
         if (target === 'attendances') loadAttendances();
         if (target === 'diagnostics') loadDiagnostics();
-        if (target === 'map') setTimeout(initMap, 200); // Give time for DOM to render view then init map
+        if (target === 'map') setTimeout(initMap, 200);
     });
 });
 
@@ -26,8 +73,8 @@ document.querySelectorAll('.nav li').forEach(item => {
 async function loadDashboard() {
     try {
         const [devicesRes, attendancesRes] = await Promise.all([
-            fetch(`${API_URL}/devices`),
-            fetch(`${API_URL}/attendances?limit=1`) // Request minimal data
+            authorizedFetch(`${API_URL}/devices`),
+            authorizedFetch(`${API_URL}/attendances?limit=1`) // Request minimal data
         ]);
 
         const devices = await devicesRes.json();
@@ -55,7 +102,7 @@ async function loadDevices() {
     tbody.innerHTML = '<tr><td colspan="5">Cargando datos...</td></tr>';
 
     try {
-        const response = await fetch(`${API_URL}/devices`);
+        const response = await authorizedFetch(`${API_URL}/devices`);
         const devices = await response.json();
 
         tbody.innerHTML = '';
@@ -92,10 +139,9 @@ async function loadDevices() {
 // Toggle Device Authorization
 window.toggleDeviceAuth = async (sn, isAuthorized) => {
     try {
-        const response = await fetch(`${API_URL}/devices/${sn}/authorize`, {
+        const response = await authorizedFetch(`${API_URL}/authorize`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ is_authorized: isAuthorized })
+            body: JSON.stringify({ sn, is_authorized: isAuthorized })
         });
 
         if (response.ok) {
@@ -132,7 +178,7 @@ async function loadAttendances() {
     if (empId) queryParams.append('pin', empId);
 
     try {
-        const response = await fetch(`${API_URL}/attendances?${queryParams.toString()}`);
+        const response = await authorizedFetch(`${API_URL}/attendances?${queryParams.toString()}`);
         const result = await response.json();
         const records = result.data || [];
 
@@ -175,7 +221,7 @@ async function loadDiagnostics() {
     try {
         // Obtenemos asistencias que coincidan con el equipo
         let url = `${API_URL}/attendances?limit=30`;
-        const response = await fetch(url);
+        const response = await authorizedFetch(url);
         const result = await response.json();
         let records = result.data || [];
 
@@ -226,7 +272,7 @@ async function initMap() {
 
     try {
         // Cargar dispositivos para colocarlos en el mapa
-        const response = await fetch(`${API_URL}/devices`);
+        const response = await authorizedFetch(`${API_URL}/devices`);
         const devices = await response.json();
 
         let addedMarkers = false;
@@ -293,5 +339,25 @@ async function initMap() {
     }
 }
 
+// Auth Event Handlers
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    const errorEl = document.getElementById('login-error');
+
+    errorEl.classList.add('hidden');
+
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) {
+        errorEl.textContent = "Error: " + error.message;
+        errorEl.classList.remove('hidden');
+    }
+});
+
+window.handleLogout = async () => {
+    await supabaseClient.auth.signOut();
+};
+
 // Initialize
-loadDashboard();
+checkAuth();

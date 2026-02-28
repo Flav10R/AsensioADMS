@@ -11,7 +11,83 @@
     <!-- Leaflet para el Mapa -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* Pantalla de login */
+        #login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top right, #1e1b4b, #030712);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-card h2 {
+            margin-bottom: 2rem;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .login-input {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.875rem 1rem;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .login-btn {
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+            padding: 0.875rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .login-btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        .logout-btn {
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.875rem;
+            padding: 0.5rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
         .filter-panel {
             background: rgba(0, 0, 0, 0.2);
             padding: 1.5rem;
@@ -74,6 +150,19 @@
 </head>
 
 <body>
+    <!-- Login Overlay -->
+    <div id="login-overlay">
+        <div class="login-card">
+            <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem;">ASENSIO <span>S.A.</span></h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">Acceso Administrativo ADMS</p>
+            <form id="login-form" class="login-form">
+                <input type="email" id="login-email" class="login-input" placeholder="Correo electrónico" required>
+                <input type="password" id="login-password" class="login-input" placeholder="Contraseña" required>
+                <button type="submit" class="login-btn">Iniciar Sesión</button>
+                <p id="login-error" style="color: #ef4444; font-size: 0.875rem; margin-top: 1rem;" class="hidden"></p>
+            </form>
+        </div>
+    </div>
     <div class="sidebar">
         <div class="asensio-logo-container">
             <!-- Si tienes el logo, reemplázalo aquí. Por defecto muestro el texto estilizado simulando la marca -->
@@ -92,8 +181,13 @@
     <div class="main-content">
         <header>
             <h1>Asensio ADMS Remote Server</h1>
-            <div class="status-indicator online">
-                <span class="dot"></span> Servidor en línea
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="logout-btn" onclick="handleLogout()">
+                    <i class="fa-solid fa-right-from-bracket"></i> Salir
+                </div>
+                <div class="status-indicator online">
+                    <span class="dot"></span> Servidor en línea
+                </div>
             </div>
         </header>
 
