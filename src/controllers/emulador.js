@@ -16,7 +16,7 @@ async function handshake() {
 async function sendPunchLog() {
     console.log(`[2] Enviando datos de asistencia (ATTLOG)...`);
 
-    // Formato ZKTeco: "PIN \t Fecha_y_Hora \t TipoDeVerificacion \t Estado"
+    // Formato Asensio: "PIN \t Fecha_y_Hora \t TipoDeVerificacion \t Estado"
     const now = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, ''); // Formato: YYYY-MM-DD HH:mm:ss
     const pinEmpleado = "1001";
     const bodyText = `${pinEmpleado}\t${now}\t1\t0`;

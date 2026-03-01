@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const iclockController = require('../controllers/iclock');
 
-// ZKTeco Push SDK HTTP Endpoints
+// Asensio ADMS Push SDK HTTP Endpoints
 router.get('/cdata', iclockController.handshake);
 router.post('/cdata', iclockController.receiveData);
 router.get('/getrequest', iclockController.getRequest);

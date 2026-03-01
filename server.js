@@ -10,7 +10,7 @@ app.use(cors());
 const iclockRoutes = require('./src/routes/iclock');
 const adminRoutes = require('./src/routes/admin');
 
-// The ZKTeco devices send plain text, we need a custom parser for the /iclock routes
+// The Asensio devices send plain text, we need a custom parser for the /iclock routes
 app.use('/iclock', express.text({ type: '*/*' }));
 app.use('/iclock', iclockRoutes);
 
@@ -21,7 +21,7 @@ app.use('/api/admin', adminRoutes);
 
 // Basic health check
 app.get('/health', (req, res) => {
-    res.status(200).json({ status: 'OK', message: 'ZKTeco Push SDK Server Running' });
+    res.status(200).json({ status: 'OK', message: 'Asensio Sistemas S.A. Proyect ADMS Server Running' });
 });
 
 // Start server

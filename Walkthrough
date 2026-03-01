@@ -1,11 +1,11 @@
-# Backend ZKTeco PUSH SDK Completado
+# Asensio Sistemas S.A. Proyect ADMS Server Completado
 
-Se ha finalizado el desarrollo del backend en Node.js (Express) para recibir conexiones de los relojes ZKTeco y administrar los equipos conectándose a Supabase.
+Se ha finalizado el desarrollo del backend en Node.js (Express) para recibir conexiones de los Relojes Asensio y administrar los equipos conectándose a Supabase.
 
 ## ¿Qué se implementó?
 
 1.  **Servidor Express (`server.js`)**: Configurado para escuchar en el puerto 8080 (o el definido en `.env`), con soporte CORS y un parser de texto personalizado para las peticiones de los relojes.
-2.  **Endpoints para ZKTeco (`/src/controllers/iclock.js`)**:
+2.  **Endpoints para Relojes Asensio (`/src/controllers/iclock.js`)**:
     *   `/iclock/cdata` (GET/POST): Permite el handshake inicial del dispositivo y la recepción de datos de asistencias (Punch Logs).
     *   `/iclock/getrequest`: Permite que los dispositivos consulten por comandos pendientes en el servidor.
     *   `/iclock/devicecmd`: Recibe el estado de ejecución de los comandos remotos.
@@ -36,7 +36,7 @@ Se ha finalizado el desarrollo del backend en Node.js (Express) para recibir con
 ## Validación Final
 
 *   Se comprobó que el servidor Express compila correctamente y no tiene errores de sintaxis en sus rutas.
-*   Cualquier reloj ZKTeco configurado con la IP de tu servidor y puerto 8080 apuntando a `/iclock` debería comenzar a reportar.
+*   Cualquier Reloj Asensio configurado con la IP de tu servidor y puerto 8080 apuntando a `/iclock` debería comenzar a reportar.
 
 > [!TIP]
 > Recuerda autorizar los equipos en Supabase (campo `is_authorized = true` en la tabla `devices`) o a través de la API `/api/admin/devices/:sn/authorize` para empezar a llevar un control estricto, o modifica la lógica en `/iclock/cdata` si quieres aceptar datos de cualquier equipo automáticamente.

@@ -1,5 +1,5 @@
 /**
- * Parses ZKTeco raw data (TSV format) into JSON objects.
+ * Parses Asensio ADMS raw data (TSV format) into JSON objects.
  * Different endpoints and parameters send different formats.
  */
 

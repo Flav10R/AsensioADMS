@@ -1,13 +1,13 @@
 # Asensio ADMS - Contexto Técnico para Agentes
 
 ## 🎯 Objetivo del Proyecto
-Servidor ADMS (Push SDK) para relojes ZKTeco, migrado de Node.js a una arquitectura 100% Serverless usando Supabase Edge Functions.
+Servidor ADMS (Push SDK) para Relojes Asensio, migrado de Node.js a una arquitectura 100% Serverless usando Supabase Edge Functions.
 
 ## 🏗️ Arquitectura
 - **Backend**: Supabase Edge Functions (Deno + TypeScript).
 - **Base de Datos**: PostgreSQL (Supabase).
 - **Frontend**: Panel de control estático (HTML/CSS/Vanilla JS) alojado en Vercel.
-- **Protocolo de Comunicación**: ADMS (HTTP/HTTPS) sobre el SDK de ZKTeco.
+- **Protocolo de Comunicación**: ADMS (HTTP/HTTPS) sobre el SDK de Asensio (Zulic compatible).
 
 ## 🛠️ Componentes Clave
 

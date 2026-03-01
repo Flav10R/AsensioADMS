@@ -7,7 +7,7 @@ Has elegido la arquitectura más eficiente: **Supabase Edge Functions**. Esto si
 ## 1. Preparación de las Funciones
 
 He creado dos funciones dentro de la carpeta `supabase/functions/`:
-1.  **`adms`**: Encargada de hablar con los relojes ZKTeco (Handshake, Asistencias, Comandos).
+1.  **`adms`**: Encargada de hablar con los Relojes Asensio (Handshake, Asistencias, Comandos).
 2.  **`admin-api`**: Encargada de alimentar el Panel de Control (Listado de equipos, filtros, autorizaciones).
 
 ### Requisitos
@@ -40,7 +40,7 @@ supabase functions deploy admin-api
 Una vez desplegado, tu servidor ADMS estará disponible en esta dirección:
 `https://vgkazdekgkowualsooyr.supabase.co/functions/v1/adms`
 
-**Configuración en el menú del reloj ZKTeco:**
+**Configuración en el menú del Reloj Asensio:**
 *   **Dirección del Servidor:** `vgkazdekgkowualsooyr.supabase.co`
 *   **Ruta (si el reloj lo permite):** `/functions/v1/adms`
 *   **Puerto:** `443`
