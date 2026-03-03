@@ -146,6 +146,56 @@
         .asensio-logo-container h2 span {
             color: var(--brand-primary);
         }
+
+        /* Nuevos estilos para botones de acción */
+        .action-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-xs {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--brand-primary);
+            color: #fff;
+        }
+
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .auth-true {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .auth-false {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .table-responsive td {
+            vertical-align: middle;
+        }
     </style>
 </head>
 
@@ -242,7 +292,8 @@
                                 <th>Alias</th>
                                 <th>Última Actividad</th>
                                 <th>Estado</th>
-                                <th>Acciones</th>
+                                <th>Autorizar</th>
+                                <th>Acciones de Datos</th>
                             </tr>
                         </thead>
                         <tbody></tbody>

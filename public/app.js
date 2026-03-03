@@ -139,6 +139,22 @@ async function loadDevices() {
                         <span class="slider"></span>
                     </label>
                 </td>
+                <td>
+                    <div class="action-group">
+                        <button class="btn btn-xs btn-outline" onclick="requestDeviceSync('${d.serial_number}', 'INFO')" title="Info de Estado">
+                            <i class="fa-solid fa-circle-info"></i> INFO
+                        </button>
+                        <button class="btn btn-xs btn-outline" onclick="requestDeviceSync('${d.serial_number}', 'USER')" title="Sincronizar Usuarios">
+                            <i class="fa-solid fa-users"></i> USERS
+                        </button>
+                        <button class="btn btn-xs btn-outline" onclick="requestDeviceSync('${d.serial_number}', 'BIODATA')" title="Sincronizar Biometría">
+                            <i class="fa-solid fa-fingerprint"></i> BIO
+                        </button>
+                        <button class="btn btn-xs btn-outline" onclick="requestDeviceSync('${d.serial_number}', 'CHECK')" title="Forzar Resincronización (Stamp=0)">
+                            <i class="fa-solid fa-sync"></i> CHECK
+                        </button>
+                    </div>
+                </td>
             `;
             tbody.appendChild(tr);
         });
@@ -165,6 +181,28 @@ window.toggleDeviceAuth = async (sn, isAuthorized) => {
     } catch (error) {
         console.error('Error toggling device authorization:', error);
         alert('Error de conexión.');
+    }
+};
+
+// Request Sync/Cmd (USER, BIODATA, INFO, CHECK)
+window.requestDeviceSync = async (sn, type) => {
+    try {
+        const response = await authorizedFetch(`${API_URL}/sync-data-request`, {
+            method: 'POST',
+            body: JSON.stringify({ sn, type })
+        });
+
+        if (response.ok) {
+            const resData = await response.json();
+            alert(`Comando ${type} enviado con éxito al equipo ${sn}.`);
+            console.log("Cmd Sent:", resData);
+        } else {
+            const err = await response.json();
+            alert(`Error: ${err.error || 'No se pudo enviar el comando'}`);
+        }
+    } catch (error) {
+        console.error('Error requesting sync:', error);
+        alert('Error de conexión al enviar el comando.');
     }
 };
 
