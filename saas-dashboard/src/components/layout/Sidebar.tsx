@@ -36,9 +36,8 @@ export default function Sidebar() {
             const { data: { user } } = await supabase.auth.getUser()
             if (user) {
                 // En un diseño robusto el company_id estaría en el JWT, 
-                // aquí consultamos tabla users (asumiendo que tiene company_id) o companies directamente si son dueños.
-                // Como workaround simple, buscamos en users y luego en companies.
-                const { data: userData } = await supabase.from('users').select('company_id').eq('id', user.id).single()
+                // aquí consultamos tabla profiles (perfil del admin)
+                const { data: userData } = await supabase.from('profiles').select('company_id').eq('id', user.id).single()
                 if (userData?.company_id) {
                     const { data: companyData } = await supabase.from('companies').select('name').eq('id', userData.company_id).single()
                     if (companyData) setCompanyName(companyData.name)

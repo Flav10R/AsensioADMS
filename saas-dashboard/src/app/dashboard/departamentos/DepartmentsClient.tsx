@@ -66,9 +66,9 @@ export default function DepartmentsClient({ initialData }: { initialData: Depart
                 }
             } else {
                 // Insert
-                // Buscamos company_id del usuario actual en la tabla users
+                // Buscamos company_id del usuario actual en la tabla profiles
                 const { data: userData, error: userError } = await supabase
-                    .from('users')
+                    .from('profiles')
                     .select('company_id')
                     .eq('id', user.id)
                     .single()
