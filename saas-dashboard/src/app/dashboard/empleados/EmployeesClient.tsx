@@ -79,7 +79,7 @@ export default function EmployeesClient({
             setPhotoUrl(emp.photo_url || null)
 
             // Map selected devices
-            const userDeviceIds = emp.user_devices?.map(ud => ud.device_id) || []
+            const userDeviceIds = emp.user_devices?.map((ud: any) => ud.device_sn) || []
             setSelectedDeviceIds(userDeviceIds)
         } else {
             setEditId(null)
@@ -180,7 +180,7 @@ export default function EmployeesClient({
                     const devicesToInsert = selectedDeviceIds.map(deviceId => ({
                         company_id: companyId,
                         user_pin: insertedUserPin,
-                        device_id: deviceId
+                        device_sn: deviceId
                     }))
 
                     const { error: devError } = await supabase.from('user_devices').insert(devicesToInsert)
