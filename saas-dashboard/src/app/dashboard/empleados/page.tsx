@@ -32,7 +32,6 @@ export default async function EmpleadosPage() {
             const { data: empData, error: empError } = await supabase
                 .from('users')
                 .select(`
-                    id, 
                     pin, 
                     internal_id,
                     name, 

@@ -217,9 +217,9 @@ export default function EmployeesClient({
         }
     }
 
-    const handleDelete = async (id: string) => {
+    const handleDelete = async (pinodelete: string) => {
         if (!confirm('¿Eliminar empleado? Esto borrará sus fichajes.')) return
-        const { error } = await supabase.from('users').delete().eq('id', id)
+        const { error } = await supabase.from('users').delete().eq('pin', pinodelete)
         if (!error) {
             // Recargar para limpiar relacionales
             window.location.reload()
@@ -392,7 +392,7 @@ export default function EmployeesClient({
                             </TableRow>
                         ) : (
                             employees.map((emp) => (
-                                <TableRow key={emp.id} className="border-slate-800 hover:bg-slate-900/50">
+                                <TableRow key={emp.pin} className="border-slate-800 hover:bg-slate-900/50">
                                     <TableCell>
                                         <div className="w-8 h-8 rounded-full overflow-hidden bg-slate-800 flex items-center justify-center">
                                             {emp.photo_url ? <img src={emp.photo_url} alt={emp.name} className="w-full h-full object-cover" /> : <UserCircle2 className="w-5 h-5 text-slate-500" />}
@@ -417,7 +417,7 @@ export default function EmployeesClient({
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(emp)} className="text-slate-400 hover:text-blue-400 px-1"><Edit2 className="h-4 w-4" /></Button>
-                                        <Button variant="ghost" size="icon" onClick={() => handleDelete(emp.id!)} className="text-slate-400 hover:text-red-400 px-1"><Trash2 className="h-4 w-4" /></Button>
+                                        <Button variant="ghost" size="icon" onClick={() => handleDelete(emp.pin)} className="text-slate-400 hover:text-red-400 px-1"><Trash2 className="h-4 w-4" /></Button>
                                     </TableCell>
                                 </TableRow>
                             ))
