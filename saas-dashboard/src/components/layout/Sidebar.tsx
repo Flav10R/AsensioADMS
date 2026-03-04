@@ -85,6 +85,13 @@ export default function Sidebar() {
                     })}
                 </nav>
             </div>
+
+            {/* Version Indicator */}
+            <div className="flex-shrink-0 p-4 border-t border-slate-800">
+                <p className="text-center text-xs font-mono text-slate-600">
+                    ADMS v1.0.1
+                </p>
+            </div>
         </div>
     )
 }
