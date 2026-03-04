@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/utils/supabase/client'
 import {
     LayoutDashboard,
     Users,
@@ -20,19 +22,38 @@ const navigation = [
     { name: 'Departamentos', href: '/dashboard/departamentos', icon: Building2 },
     { name: 'Horarios de Trabajo', href: '/dashboard/horarios', icon: Clock },
     { name: 'Incidentes', href: '/dashboard/incidentes', icon: AlertTriangle },
-    { name: 'Equipos ZKTeco', href: '/dashboard/equipos', icon: HardDrive },
+    { name: 'Relojes o Registradores', href: '/dashboard/equipos', icon: HardDrive },
     { name: 'Ajustes', href: '/dashboard/ajustes', icon: Settings },
 ]
 
 export default function Sidebar() {
     const pathname = usePathname()
+    const [companyName, setCompanyName] = useState('Mi Empresa')
+
+    useEffect(() => {
+        const fetchCompany = async () => {
+            const supabase = createClient()
+            const { data: { user } } = await supabase.auth.getUser()
+            if (user) {
+                // En un diseño robusto el company_id estaría en el JWT, 
+                // aquí consultamos tabla users (asumiendo que tiene company_id) o companies directamente si son dueños.
+                // Como workaround simple, buscamos en users y luego en companies.
+                const { data: userData } = await supabase.from('users').select('company_id').eq('id', user.id).single()
+                if (userData?.company_id) {
+                    const { data: companyData } = await supabase.from('companies').select('name').eq('id', userData.company_id).single()
+                    if (companyData) setCompanyName(companyData.name)
+                }
+            }
+        }
+        fetchCompany()
+    }, [])
 
     return (
-        <div className="flex flex-col w-64 bg-slate-950 border-r border-slate-800 h-screen fixed top-0 left-0 hidden md:flex">
+        <div className="flex flex-col w-64 bg-slate-950 border-r border-slate-800 h-screen fixed top-0 left-0 hidden md:flex z-50">
             {/* Brand */}
             <div className="flex h-16 shrink-0 items-center px-6 border-b border-slate-800">
-                <span className="text-xl font-extrabold tracking-tight text-white">
-                    Asensio <span className="text-blue-500">ADMS</span>
+                <span className="text-xl font-extrabold tracking-tight text-white line-clamp-1" title={companyName}>
+                    {companyName}
                 </span>
             </div>
 
@@ -49,8 +70,8 @@ export default function Sidebar() {
                                 key={item.name}
                                 href={item.href}
                                 className={`group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${isActive
-                                        ? 'bg-blue-600/10 text-blue-500'
-                                        : 'text-slate-300 hover:bg-slate-900 hover:text-white'
+                                    ? 'bg-blue-600/10 text-blue-500'
+                                    : 'text-slate-300 hover:bg-slate-900 hover:text-white'
                                     }`}
                             >
                                 <item.icon

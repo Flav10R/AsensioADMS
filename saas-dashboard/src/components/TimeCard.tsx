@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Printer, Download, Clock, AlertCircle } from 'lucide-react'
+import { Printer, Download, Clock, AlertCircle, Users } from 'lucide-react'
 
 // Dummy data for visual mockup
 const mockPunches = [
@@ -49,8 +49,10 @@ export default function TimeCard() {
 
                 <CardHeader className="border-b-2 border-dashed border-[#d5ccb5] bg-[#f9f5ea] pb-6 pt-8 px-8 flex flex-row items-center gap-6">
                     {/* Employee Photo Placeholder */}
-                    <div className="w-24 h-32 bg-slate-200 border-4 border-white shadow-md rounded-sm flex items-center justify-center overflow-hidden shrink-0">
-                        <img src="/flavio.jpg" alt="Flavio Rodriguez" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = 'https://api.dicebear.com/7.x/avataaars/svg?seed=Flavio'; }} />
+                    <div className="w-24 h-32 bg-slate-200 border-4 border-white shadow-md rounded-sm flex flex-col items-center justify-center overflow-hidden shrink-0 text-slate-400">
+                        {/* Se utilizará Supabase Storage en un futuro para inyectar foto_url aquí */}
+                        <Users className="w-12 h-12 mb-2 text-slate-300" />
+                        <span className="text-[10px] uppercase font-bold text-center leading-tight">Sin<br />Foto</span>
                     </div>
 
                     <div className="space-y-3 flex-1">
