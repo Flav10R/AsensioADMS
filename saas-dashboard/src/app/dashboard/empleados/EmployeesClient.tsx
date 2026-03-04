@@ -76,7 +76,7 @@ export default function EmployeesClient({
 
     const handleOpenDialog = (emp?: Employee) => {
         if (emp) {
-            setEditId(emp.id!)
+            setEditId(emp.pin)
             setPin(emp.pin || '')
             setInternalId(emp.internal_id || '')
             setName(emp.name || '')
@@ -101,16 +101,10 @@ export default function EmployeesClient({
             setDepartmentId('')
             setScheduleId('')
             setPhotoUrl(null)
-            // Por defecto en nuevos empleados seleccionamos todos los relojes disponibles en la bd
-            setSelectedDeviceIds(devices.map(d => d.id))
+            // Por defecto seleccionamos el primer reloj disponible en la base de datos (Ej: Reloj1 o PENDING-...)
+            setSelectedDeviceIds(devices.length > 0 ? [devices[0].id] : [])
         }
         setIsOpen(true)
-    }
-
-    const toggleDevice = (deviceId: string) => {
-        setSelectedDeviceIds(prev =>
-            prev.includes(deviceId) ? prev.filter(id => id !== deviceId) : [...prev, deviceId]
-        )
     }
 
     const uploadPhoto = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -331,33 +325,25 @@ export default function EmployeesClient({
                                 </div>
                             </div>
 
-                            {/* Asignación a Dispositivos */}
+                            {/* Asignación a Dispositivo */}
                             <div className="space-y-4 border border-slate-800 p-4 rounded-md bg-slate-950/50">
-                                <h3 className="text-sm font-semibold text-slate-300 border-b border-slate-800 pb-2">Permisos en Registradores Físicos</h3>
-                                <p className="text-xs text-slate-500 mb-2">Selecciona en qué relojes este empleado puede fichar y transferir su huella o rostro.</p>
+                                <h3 className="text-sm font-semibold text-slate-300 border-b border-slate-800 pb-2">Registrador Físico Principal</h3>
+                                <p className="text-xs text-slate-500 mb-2">Selecciona el reloj por defecto donde ficha el empleado.</p>
 
-                                <div className="flex flex-col gap-3 mt-2 max-h-32 overflow-y-auto">
-                                    {devices.length === 0 ? (
-                                        <p className="text-sm text-slate-500 italic">No hay registradores dados de alta en la Empresa.</p>
-                                    ) : (
-                                        devices.map(device => (
-                                            <div key={device.id} className="flex items-center space-x-2">
-                                                <input
-                                                    type="checkbox"
-                                                    id={`dev-${device.id}`}
-                                                    checked={selectedDeviceIds.includes(device.id)}
-                                                    onChange={() => toggleDevice(device.id)}
-                                                    className="w-4 h-4 rounded border-slate-600 text-blue-600 focus:ring-blue-600 bg-slate-950"
-                                                />
-                                                <label
-                                                    htmlFor={`dev-${device.id}`}
-                                                    className="text-sm font-medium leading-none text-slate-300 cursor-pointer"
-                                                >
-                                                    {device.alias || device.sn}
-                                                </label>
-                                            </div>
-                                        ))
-                                    )}
+                                <div className="space-y-2">
+                                    <select
+                                        id="device_select"
+                                        value={selectedDeviceIds[0] || ''}
+                                        onChange={(e) => setSelectedDeviceIds([e.target.value])}
+                                        className="w-full h-10 rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white"
+                                    >
+                                        <option value="" disabled>Seleccione un Reloj</option>
+                                        {devices.map(device => (
+                                            <option key={device.id} value={device.id}>
+                                                {device.alias || device.sn || 'Reloj Sin Nombre'}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
 
