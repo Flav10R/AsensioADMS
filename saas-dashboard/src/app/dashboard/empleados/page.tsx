@@ -29,7 +29,7 @@ export default async function EmpleadosPage() {
 
         if (companyId) {
             // Cargar empleados con sus FK (departmentos, horarios) y relación Muchos a Muchos (user_devices)
-            const { data: empData } = await supabase
+            const { data: empData, error: empError } = await supabase
                 .from('users')
                 .select(`
                     id, 
@@ -44,10 +44,11 @@ export default async function EmpleadosPage() {
                     schedule_id,
                     departments(name),
                     schedules(name),
-                    user_devices(device_sn)
+                    user_devices!user_devices_user_pin_fkey(device_sn)
                 `)
                 .order('name', { ascending: true })
 
+            if (empError) console.error("Error al cargar empleados desde Supabase:", empError.message)
             if (empData) employees = empData
 
             // Cargar catálogos para los combos

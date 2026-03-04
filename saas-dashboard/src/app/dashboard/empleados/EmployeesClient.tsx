@@ -229,7 +229,7 @@ export default function EmployeesClient({
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-white">Listado General</h2>
+                <h2 className="text-xl font-semibold text-white">Empleados</h2>
 
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
                     <DialogTrigger asChild>
@@ -378,9 +378,10 @@ export default function EmployeesClient({
                         <TableRow className="border-slate-800 hover:bg-slate-900/50">
                             <TableHead className="w-16"></TableHead>
                             <TableHead className="text-slate-400 font-mono">Legajo</TableHead>
-                            <TableHead className="text-slate-400 font-mono text-xs">ID ZK</TableHead>
+                            <TableHead className="text-slate-400 font-mono text-xs">Reloj Usr ID</TableHead>
                             <TableHead className="text-slate-400">Personal</TableHead>
                             <TableHead className="text-slate-400">Dpto. / Horario</TableHead>
+                            <TableHead className="text-slate-400">Estado (Novedad Diaria)</TableHead>
                             <TableHead className="text-right text-slate-400">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -405,6 +406,14 @@ export default function EmployeesClient({
                                             <span>{emp.departments?.name || '-'}</span>
                                             <span className="text-xs text-slate-500">{emp.schedules?.name || 'Libre'}</span>
                                         </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <select className="bg-slate-900 border border-slate-700 text-xs rounded p-1.5 text-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
+                                            <option>Trabajando (Check-In)</option>
+                                            <option>Finalizó (Check-Out)</option>
+                                            <option>Ausente / Faltó</option>
+                                            <option>Licencia / Vacaciones</option>
+                                        </select>
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <Button variant="ghost" size="icon" onClick={() => handleOpenDialog(emp)} className="text-slate-400 hover:text-blue-400 px-1"><Edit2 className="h-4 w-4" /></Button>
