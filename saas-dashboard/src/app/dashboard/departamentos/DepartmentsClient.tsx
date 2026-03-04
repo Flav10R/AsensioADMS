@@ -66,25 +66,37 @@ export default function DepartmentsClient({ initialData }: { initialData: Depart
                 }
             } else {
                 // Insert
-                // Asumiendo que el admin puede o la base maneja company_id o lo sacamos del custom claim o BD
-                // Buscamos company_id del usuario actual (esto dependerá de la arquitectura robusta real)
-                const { data: userData } = await supabase.from('users').select('company_id').eq('id', user.id).single()
+                // Buscamos company_id del usuario actual en la tabla users
+                const { data: userData, error: userError } = await supabase
+                    .from('users')
+                    .select('company_id')
+                    .eq('id', user.id)
+                    .single()
 
-                // HACK: si userData falla, podríamos omitirlo si hay triggers en BD, pero para asegurar:
-                const companyIdFallback = userData?.company_id || 'aca-va-tu-company-id-real'
-                // Idealmente este CRUD lo hace la empresa directamente con su sesión activa ligada a company_id
+                if (userError || !userData?.company_id) {
+                    console.error("Error al obtener company_id:", userError)
+                    alert("Tu usuario no está enlazado a ninguna empresa (company_id). No puedes crear departamentos.")
+                    setLoading(false)
+                    return
+                }
+
+                const companyId = userData.company_id
 
                 const { data: newDepts, error } = await supabase
                     .from('departments')
-                    .insert({ name, company_id: user.id /* Por ahora asumimos tenant = user.id en el auth simple */ })
+                    .insert({ name, company_id: companyId })
                     .select()
 
                 if (!error && newDepts) {
                     setDepartments([newDepts[0], ...departments])
+                } else if (error) {
+                    console.error("Error insertando departamento:", error)
+                    alert("Error al guardar: " + error.message)
                 }
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error(e)
+            alert("Excepción: " + e.message)
         } finally {
             setLoading(false)
             setIsOpen(false)
