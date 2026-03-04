@@ -17,7 +17,7 @@ import {
 
 const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Liquidación Temporal', href: '/dashboard/asistencia', icon: CalendarDays },
+    { name: 'Tarjeta de Empleado', href: '/dashboard/asistencia', icon: CalendarDays },
     { name: 'Staff', href: '/dashboard/empleados', icon: Users },
     { name: 'Departamentos', href: '/dashboard/departamentos', icon: Building2 },
     { name: 'Horarios de Trabajo', href: '/dashboard/horarios', icon: Clock },
