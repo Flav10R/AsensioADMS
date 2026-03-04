@@ -181,7 +181,10 @@ export default function EmployeesClient({
                     .select('pin')
                     .single()
 
-                if (error) throw error
+                if (error) {
+                    if (error.code === '23505') throw new Error("El Legajo o ID de Usuario ingresado ya está registrado en la base de datos.")
+                    throw error
+                }
                 if (newEmp) insertedUserPin = newEmp.pin
             }
 
@@ -267,7 +270,7 @@ export default function EmployeesClient({
                                         <Input id="internalId" value={internalId} onChange={(e) => setInternalId(e.target.value)} className="bg-slate-950 border-slate-800 text-white" placeholder="Ej: EMP-001" />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label htmlFor="pin" className="text-slate-300">ID Físico en Reloj ZK</Label>
+                                        <Label htmlFor="pin" className="text-slate-300">ID Usuario (ID en reloj)</Label>
                                         <Input id="pin" value={pin} onChange={(e) => setPin(e.target.value)} className="bg-slate-950 border-slate-800 text-white" placeholder="ID numérico ZKTeco" />
                                     </div>
                                 </div>

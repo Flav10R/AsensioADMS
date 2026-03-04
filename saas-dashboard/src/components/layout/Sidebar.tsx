@@ -17,24 +17,28 @@ import {
 
 const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Tarjeta de Empleado', href: '/dashboard/asistencia', icon: CalendarDays },
-    { name: 'Staff', href: '/dashboard/empleados', icon: Users },
+    { name: 'Tarjeta Reloj', href: '/dashboard/asistencia', icon: CalendarDays },
+    { name: 'Personal', href: '/dashboard/empleados', icon: Users },
     { name: 'Departamentos', href: '/dashboard/departamentos', icon: Building2 },
     { name: 'Horarios de Trabajo', href: '/dashboard/horarios', icon: Clock },
     { name: 'Incidentes', href: '/dashboard/incidentes', icon: AlertTriangle },
-    { name: 'Relojes o Registradores', href: '/dashboard/equipos', icon: HardDrive },
+    { name: 'Registradores', href: '/dashboard/equipos', icon: HardDrive },
     { name: 'Ajustes', href: '/dashboard/ajustes', icon: Settings },
 ]
 
 export default function Sidebar() {
     const pathname = usePathname()
     const [companyName, setCompanyName] = useState('Mi Empresa')
+    const [userName, setUserName] = useState('Admin')
 
     useEffect(() => {
         const fetchCompany = async () => {
             const supabase = createClient()
             const { data: { user } } = await supabase.auth.getUser()
             if (user) {
+                // Obtener el nombre del Admin desde sus metadatos o fragmento del email
+                setUserName(user.user_metadata?.full_name || user.email?.split('@')[0] || 'Admin')
+
                 // En un diseño robusto el company_id estaría en el JWT, 
                 // aquí consultamos tabla profiles (perfil del admin)
                 const { data: userData } = await supabase.from('profiles').select('company_id').eq('id', user.id).single()
@@ -49,8 +53,11 @@ export default function Sidebar() {
 
     return (
         <div className="flex flex-col w-64 bg-slate-950 border-r border-slate-800 h-screen fixed top-0 left-0 hidden md:flex z-50">
-            {/* Brand */}
-            <div className="flex h-16 shrink-0 items-center px-6 border-b border-slate-800">
+            {/* Brand & User Profile */}
+            <div className="flex flex-col shrink-0 px-6 py-4 justify-center border-b border-slate-800 min-h-20">
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-1 line-clamp-1">
+                    Operador: {userName}
+                </span>
                 <span className="text-xl font-extrabold tracking-tight text-white line-clamp-1" title={companyName}>
                     {companyName}
                 </span>
