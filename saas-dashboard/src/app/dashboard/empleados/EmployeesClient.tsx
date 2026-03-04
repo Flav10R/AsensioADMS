@@ -31,6 +31,9 @@ type Employee = {
     internal_id?: string | null
     name: string
     photo_url: string | null
+    phone?: string | null
+    email?: string | null
+    birth_date?: string | null
     department_id: string | null
     schedule_id: string | null
     departments?: { name: string } | null
@@ -60,6 +63,9 @@ export default function EmployeesClient({
     const [pin, setPin] = useState('')
     const [internalId, setInternalId] = useState('')
     const [name, setName] = useState('')
+    const [phone, setPhone] = useState('')
+    const [email, setEmail] = useState('')
+    const [birthDate, setBirthDate] = useState('')
     const [departmentId, setDepartmentId] = useState('')
     const [scheduleId, setScheduleId] = useState('')
     const [photoUrl, setPhotoUrl] = useState<string | null>(null)
@@ -74,6 +80,9 @@ export default function EmployeesClient({
             setPin(emp.pin || '')
             setInternalId(emp.internal_id || '')
             setName(emp.name || '')
+            setPhone(emp.phone || '')
+            setEmail(emp.email || '')
+            setBirthDate(emp.birth_date || '')
             setDepartmentId(emp.department_id || '')
             setScheduleId(emp.schedule_id || '')
             setPhotoUrl(emp.photo_url || null)
@@ -86,6 +95,9 @@ export default function EmployeesClient({
             setPin('')
             setInternalId('')
             setName('')
+            setPhone('')
+            setEmail('')
+            setBirthDate('')
             setDepartmentId('')
             setScheduleId('')
             setPhotoUrl(null)
@@ -145,6 +157,9 @@ export default function EmployeesClient({
                 pin: finalPin,
                 internal_id: internalId.trim() || null,
                 name,
+                phone: phone.trim() || null,
+                email: email.trim() || null,
+                birth_date: birthDate || null,
                 company_id: companyId,
                 department_id: departmentId || null,
                 schedule_id: scheduleId || null,
@@ -260,6 +275,20 @@ export default function EmployeesClient({
                                 <div className="space-y-2">
                                     <Label htmlFor="name" className="text-slate-300">Nombres y Apellidos *</Label>
                                     <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="bg-slate-950 border-slate-800 text-white" placeholder="Nombre completo" required />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="phone" className="text-slate-300">Celular</Label>
+                                        <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} className="bg-slate-950 border-slate-800 text-white" placeholder="+54 9 11 ..." />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="email" className="text-slate-300">Email</Label>
+                                        <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-slate-950 border-slate-800 text-white" placeholder="correo@empresa.com" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="birth_date" className="text-slate-300">Fecha de Nacimiento</Label>
+                                    <Input id="birth_date" type="date" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} className="bg-slate-950 border-slate-800 text-white [color-scheme:dark]" />
                                 </div>
                             </div>
 
